@@ -6,3 +6,5 @@ project(mouser
 
 add_executable(${CMAKE_PROJECT_NAME} main.c)
 
+add_subdirectory(screen)
+target_link_libraries(${CMAKE_PROJECT_NAME} screen)
