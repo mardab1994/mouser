@@ -2,12 +2,13 @@
 #include "mouse_exit.h"
 #include "mouse_pause.h"
 
+#include <X11/Xlib.h>
 #include <fcntl.h>
 #include <linux/uinput.h>
+#include <stdio.h>
 #include <string.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
-
 
 static int mouse = -1;
 
@@ -82,4 +83,34 @@ mouse_move(int x, int y)
     mouse_emit(EV_REL, REL_X, x);
     mouse_emit(EV_REL, REL_Y, y);
     mouse_emit(EV_SYN, SYN_REPORT, 0);
+}
+
+void
+mouse_position_get(int *x, int *y)
+{
+    Display     *display;
+    Window       root_window, focus_window;
+    int          revert;
+    int          win_x, win_y;
+    unsigned int mask;
+
+    // Open a connection to the X server
+    display = XOpenDisplay(NULL);
+    if (display == NULL) {
+        fprintf(stderr, "Cannot open display\n");
+        return;
+    }
+
+    // Get the root window
+    root_window = DefaultRootWindow(display);
+
+    // Get the window with input focus
+    XGetInputFocus(display, &focus_window, &revert);
+
+    // Get the current pointer position
+    XQueryPointer(display, root_window, &root_window, &root_window, x, y, &win_x, &win_y, &mask);
+
+    XCloseDisplay(display);
+
+    printf("Mouse coordinates: (%d, %d)\r\n", *x, *y);
 }
