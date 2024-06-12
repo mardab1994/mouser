@@ -75,3 +75,11 @@ mouse_deinit(void)
 
     return 0;
 }
+
+void
+mouse_move(int x, int y)
+{
+    mouse_emit(EV_REL, REL_X, x);
+    mouse_emit(EV_REL, REL_Y, y);
+    mouse_emit(EV_SYN, SYN_REPORT, 0);
+}
