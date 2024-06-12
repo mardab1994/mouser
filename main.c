@@ -15,6 +15,10 @@ main(void)
         return -2;
     }
 
+    while (1) {
+        mouse_algo();
+    }
+
     if (mouse_deinit()) {
         return -3;
     }
