@@ -11,9 +11,7 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-#define PAUSE_X (100)
-#define PAUSE_Y (100)
-#define MARGIN  (120)
+#define MARGIN (120)
 
 static int mouse = -1;
 
@@ -65,6 +63,8 @@ mouse_init(const int screen_width, const int screen_height)
     ioctl(mouse, UI_DEV_SETUP, &usetup);
     ioctl(mouse, UI_DEV_CREATE);
     sleep(1);
+
+    mouse_pause_init();
 
     return 0;
 }
@@ -140,6 +140,12 @@ mouse_algo(void)
 
     while (1) {
         mouse_position_get(&current_pos_x, &current_pos_y);
+
+        mouse_pause(current_pos_x, current_pos_y);
+
+        if (mouse_pause_state_get()) {
+            continue;
+        }
 
         if ((abs(current_pos_x - target_x) < MARGIN) && (abs(current_pos_y - target_y) < MARGIN)) {
             printf("target achieved\r\n");
