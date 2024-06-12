@@ -4,11 +4,13 @@
 
 #include <X11/Xlib.h>
 #include <fcntl.h>
+#include <inttypes.h>
 #include <linux/uinput.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
+#include <time.h>
 #include <unistd.h>
 
 #define MARGIN (120)
@@ -31,6 +33,31 @@ mouse_emit(int type, int code, int val)
     ie.time.tv_usec = 0;
 
     write(mouse, &ie, sizeof(ie));
+}
+
+static int64_t
+millis(void)
+{
+    struct timespec now;
+    timespec_get(&now, TIME_UTC);
+    return ((int64_t)now.tv_sec) * 1000 + ((int64_t)now.tv_nsec) / 1000000;
+}
+
+static bool
+mouse_slow_down(void)
+{
+    int64_t        current_time;
+    static int64_t last_time = 0;
+
+    current_time = millis();
+
+    if ((current_time - last_time) < 5) {
+        return true;
+    }
+
+    last_time = current_time;
+
+    return false;
 }
 
 int
@@ -142,6 +169,10 @@ mouse_algo(void)
         mouse_position_get(&current_pos_x, &current_pos_y);
 
         mouse_pause(current_pos_x, current_pos_y);
+
+        if (mouse_slow_down()) {
+            continue;
+        }
 
         if (mouse_pause_state_get()) {
             continue;
