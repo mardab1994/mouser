@@ -7,3 +7,5 @@ int mouse_deinit(void);
 void mouse_move(int x, int y);
 
 void mouse_position_get(int *x, int *y);
+
+void mouse_algo(void);

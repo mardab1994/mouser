@@ -6,9 +6,14 @@
 #include <fcntl.h>
 #include <linux/uinput.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
+
+#define PAUSE_X (100)
+#define PAUSE_Y (100)
+#define MARGIN  (120)
 
 static int mouse = -1;
 
@@ -113,4 +118,48 @@ mouse_position_get(int *x, int *y)
     XCloseDisplay(display);
 
     printf("Mouse coordinates: (%d, %d)\r\n", *x, *y);
+}
+
+void
+mouse_algo(void)
+{
+    int current_pos_x, current_pos_y;
+    mouse_position_get(&current_pos_x, &current_pos_y);
+
+    int target_x = PAUSE_X;
+    while (target_x <= PAUSE_X) {
+        target_x = rand() % mouse_screen_max_width;
+    }
+
+    int target_y = PAUSE_Y;
+    while (target_y <= PAUSE_Y) {
+        target_y = rand() % mouse_screen_max_height;
+    }
+
+    printf("Target x = %d, y = %d\r\n", target_x, target_y);
+
+    while (1) {
+        mouse_position_get(&current_pos_x, &current_pos_y);
+
+        if ((abs(current_pos_x - target_x) < MARGIN) && (abs(current_pos_y - target_y) < MARGIN)) {
+            printf("target achieved\r\n");
+            return;
+        }
+
+        int x = 0;
+        if (target_x - current_pos_x > 0) {
+            x = 1;
+        } else if (target_x - current_pos_x < 0) {
+            x = -1;
+        }
+
+        int y = 0;
+        if (target_y - current_pos_y > 0) {
+            y = 1;
+        } else if (target_y - current_pos_y < 0) {
+            y = -1;
+        }
+
+        mouse_move(x, y);
+    }
 }
