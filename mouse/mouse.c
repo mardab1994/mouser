@@ -1,4 +1,5 @@
 #include "mouse.h"
+#include "mouse_cfg.h"
 #include "mouse_exit.h"
 #include "mouse_pause.h"
 
@@ -12,8 +13,6 @@
 #include <sys/ioctl.h>
 #include <time.h>
 #include <unistd.h>
-
-#define MARGIN (120)
 
 static int mouse = -1;
 
@@ -89,24 +88,23 @@ mouse_init(const int screen_width, const int screen_height)
 
     ioctl(mouse, UI_DEV_SETUP, &usetup);
     ioctl(mouse, UI_DEV_CREATE);
-    sleep(1);
 
     mouse_pause_init();
+
+    mouse_exit_init(screen_width, screen_height);
 
     return 0;
 }
 
-int
+void
 mouse_deinit(void)
 {
     if (mouse < 0) {
-        return -1;
+        return;
     }
 
     ioctl(mouse, UI_DEV_DESTROY);
     close(mouse);
-
-    return 0;
 }
 
 void
@@ -169,6 +167,8 @@ mouse_algo(void)
         mouse_position_get(&current_pos_x, &current_pos_y);
 
         mouse_pause(current_pos_x, current_pos_y);
+
+        mouse_exit(current_pos_x, current_pos_y);
 
         if (mouse_slow_down()) {
             continue;

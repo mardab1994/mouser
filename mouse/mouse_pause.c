@@ -1,4 +1,5 @@
 #include "mouse_pause.h"
+#include "mouse_cfg.h"
 
 #include <signal.h>
 #include <stdio.h>
