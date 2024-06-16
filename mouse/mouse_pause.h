@@ -2,9 +2,6 @@
 
 #include <stdbool.h>
 
-#define PAUSE_X (100)
-#define PAUSE_Y (100)
-
 void mouse_pause_init(void);
 
 void mouse_pause(const int x, const int y);

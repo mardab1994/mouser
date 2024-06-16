@@ -1,4 +1,5 @@
 #include "mouse.h"
+#include "mouse_cfg.h"
 #include "mouse_exit.h"
 #include "mouse_pause.h"
 
@@ -12,8 +13,6 @@
 #include <sys/ioctl.h>
 #include <time.h>
 #include <unistd.h>
-
-#define MARGIN (120)
 
 static int mouse = -1;
 
