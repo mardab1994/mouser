@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "mouse/mouse.h"
 #include "screen/screen.h"
@@ -15,12 +16,10 @@ main(void)
         return -2;
     }
 
+    atexit(mouse_deinit);
+
     while (1) {
         mouse_algo();
-    }
-
-    if (mouse_deinit()) {
-        return -3;
     }
 
     return 0;

@@ -96,17 +96,15 @@ mouse_init(const int screen_width, const int screen_height)
     return 0;
 }
 
-int
+void
 mouse_deinit(void)
 {
     if (mouse < 0) {
-        return -1;
+        return;
     }
 
     ioctl(mouse, UI_DEV_DESTROY);
     close(mouse);
-
-    return 0;
 }
 
 void
